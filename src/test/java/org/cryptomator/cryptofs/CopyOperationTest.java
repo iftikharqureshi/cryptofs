@@ -6,7 +6,7 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static org.cryptomator.cryptofs.matchers.ByteBufferMatcher.contains;
-import static org.cryptomator.cryptofs.util.ByteBuffers.repeat;
+import static org.cryptomator.cryptofs.common.ByteBuffers.repeat;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -25,6 +25,7 @@ import java.nio.file.spi.FileSystemProvider;
 import java.util.EnumSet;
 
 import org.cryptomator.cryptofs.mocks.FileChannelMock;
+import org.cryptomator.cryptofs.paths.CryptoPath;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

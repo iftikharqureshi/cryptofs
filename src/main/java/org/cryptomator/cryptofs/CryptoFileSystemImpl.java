@@ -8,15 +8,32 @@
  *******************************************************************************/
 package org.cryptomator.cryptofs;
 
-import org.cryptomator.cryptofs.CryptoPathMapper.CiphertextDirectory;
-import org.cryptomator.cryptofs.CryptoPathMapper.CiphertextFileType;
+import org.cryptomator.cryptofs.paths.CiphertextDirectoryDeleter;
+import org.cryptomator.cryptofs.paths.CryptoPath;
+import org.cryptomator.cryptofs.paths.CryptoPathFactory;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper.CiphertextDirectory;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper.CiphertextFileType;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeByNameProvider;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeProvider;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeViewProvider;
+import org.cryptomator.cryptofs.common.ArrayUtils;
+import org.cryptomator.cryptofs.common.Constants;
+import org.cryptomator.cryptofs.common.FinallyUtil;
+import org.cryptomator.cryptofs.common.PathToVault;
+import org.cryptomator.cryptofs.common.ReadonlyFlag;
+import org.cryptomator.cryptofs.file.EffectiveOpenOptions;
+import org.cryptomator.cryptofs.file.OpenCryptoFile;
+import org.cryptomator.cryptofs.file.OpenCryptoFiles;
+import org.cryptomator.cryptofs.paths.DirectoryIdProvider;
+import org.cryptomator.cryptofs.paths.CryptoDirectoryStreamProvider;
+import org.cryptomator.cryptofs.paths.PathMatcherFactory;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.AccessDeniedException;
@@ -59,10 +76,10 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.cryptomator.cryptofs.Constants.SEPARATOR;
+import static org.cryptomator.cryptofs.common.Constants.SEPARATOR;
 
 @PerFileSystem
-class CryptoFileSystemImpl extends CryptoFileSystem {
+public class CryptoFileSystemImpl extends CryptoFileSystem {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CryptoFileSystemImpl.class);
 
@@ -78,7 +95,7 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 	private final CryptoFileAttributeProvider fileAttributeProvider;
 	private final CryptoFileAttributeByNameProvider fileAttributeByNameProvider;
 	private final CryptoFileAttributeViewProvider fileAttributeViewProvider;
-	private final DirectoryStreamFactory directoryStreamFactory;
+	private final CryptoDirectoryStreamProvider directoryStreamProvider;
 	private final OpenCryptoFiles openCryptoFiles;
 	private final CryptoFileStore fileStore;
 	private final PathMatcherFactory pathMatcherFactory;
@@ -94,7 +111,7 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 	public CryptoFileSystemImpl(@PathToVault Path pathToVault, Cryptor cryptor, CryptoFileSystemProvider provider, CryptoFileSystems cryptoFileSystems, CryptoFileStore fileStore,
 								OpenCryptoFiles openCryptoFiles, CryptoPathMapper cryptoPathMapper, DirectoryIdProvider dirIdProvider, CryptoFileAttributeProvider fileAttributeProvider,
 								CryptoFileAttributeViewProvider fileAttributeViewProvider, PathMatcherFactory pathMatcherFactory, CryptoPathFactory cryptoPathFactory, CryptoFileSystemStats stats,
-								RootDirectoryInitializer rootDirectoryInitializer, CryptoFileAttributeByNameProvider fileAttributeByNameProvider, DirectoryStreamFactory directoryStreamFactory, FinallyUtil finallyUtil,
+								RootDirectoryInitializer rootDirectoryInitializer, CryptoFileAttributeByNameProvider fileAttributeByNameProvider, CryptoDirectoryStreamProvider directoryStreamProvider, FinallyUtil finallyUtil,
 								CiphertextDirectoryDeleter ciphertextDirDeleter, ReadonlyFlag readonlyFlag) {
 		this.cryptor = cryptor;
 		this.provider = provider;
@@ -110,7 +127,7 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 		this.pathMatcherFactory = pathMatcherFactory;
 		this.cryptoPathFactory = cryptoPathFactory;
 		this.stats = stats;
-		this.directoryStreamFactory = directoryStreamFactory;
+		this.directoryStreamProvider = directoryStreamProvider;
 		this.ciphertextDirDeleter = ciphertextDirDeleter;
 		this.readonlyFlag = readonlyFlag;
 		this.rootPath = cryptoPathFactory.rootFor(this);
@@ -171,7 +188,7 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 			finallyUtil.guaranteeInvocationOf( //
 					() -> cryptoFileSystems.remove(this), //
 					() -> openCryptoFiles.close(), //
-					() -> directoryStreamFactory.close(), //
+					() -> directoryStreamProvider.close(), //
 					() -> cryptor.destroy());
 		}
 	}
@@ -247,7 +264,7 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 	 * @param type          the Class object corresponding to the file attribute view
 	 * @param options       future use
 	 * @return a file attribute view of the specified type, or <code>null</code> if the attribute view type is not available
-	 * @see CryptoFileAttributeViewProvider#getAttributeView(Path, Class)
+	 * @see CryptoFileAttributeViewProvider#getAttributeView(CryptoPath, Class)
 	 */
 	<V extends FileAttributeView> V getFileAttributeView(CryptoPath cleartextPath, Class<V> type, LinkOption... options) {
 		return fileAttributeViewProvider.getAttributeView(cleartextPath, type);
@@ -338,7 +355,7 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 	}
 
 	DirectoryStream<Path> newDirectoryStream(CryptoPath cleartextDir, Filter<? super Path> filter) throws IOException {
-		return directoryStreamFactory.newDirectoryStream(cleartextDir, filter);
+		return directoryStreamProvider.newDirectoryStream(cleartextDir, filter);
 	}
 
 	FileChannel newFileChannel(CryptoPath cleartextPath, Set<? extends OpenOption> optionsSet, FileAttribute<?>... attrs) throws IOException {
@@ -527,15 +544,15 @@ class CryptoFileSystemImpl extends CryptoFileSystem {
 
 	/* internal methods */
 
-	CryptoPath getRootPath() {
+	public CryptoPath getRootPath() {
 		return rootPath;
 	}
 
-	CryptoPath getEmptyPath() {
+	public CryptoPath getEmptyPath() {
 		return emptyPath;
 	}
 
-	void assertOpen() {
+	public void assertOpen() {
 		if (!open) {
 			throw new ClosedFileSystemException();
 		}

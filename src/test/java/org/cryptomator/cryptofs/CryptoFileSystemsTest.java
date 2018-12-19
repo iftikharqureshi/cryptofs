@@ -16,6 +16,7 @@ import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Path;
 
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

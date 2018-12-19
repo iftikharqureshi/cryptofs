@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 
 import java.nio.file.Path;
 
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

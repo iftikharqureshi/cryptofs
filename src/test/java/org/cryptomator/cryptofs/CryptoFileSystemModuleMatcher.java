@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.nio.file.Path;
 
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 

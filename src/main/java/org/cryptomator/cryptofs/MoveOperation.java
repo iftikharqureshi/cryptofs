@@ -1,5 +1,8 @@
 package org.cryptomator.cryptofs;
 
+import org.cryptomator.cryptofs.common.ArrayUtils;
+import org.cryptomator.cryptofs.paths.CryptoPath;
+
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 

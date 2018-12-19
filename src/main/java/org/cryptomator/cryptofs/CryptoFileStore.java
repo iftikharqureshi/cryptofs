@@ -9,8 +9,11 @@
 package org.cryptomator.cryptofs;
 
 import com.google.common.collect.Sets;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeViewProvider;
+import org.cryptomator.cryptofs.common.PathToVault;
+import org.cryptomator.cryptofs.common.ReadonlyFlag;
 
-import static org.cryptomator.cryptofs.UncheckedThrows.rethrowUnchecked;
+import static org.cryptomator.cryptofs.common.UncheckedThrows.rethrowUnchecked;
 
 import java.io.IOException;
 import java.nio.file.Files;

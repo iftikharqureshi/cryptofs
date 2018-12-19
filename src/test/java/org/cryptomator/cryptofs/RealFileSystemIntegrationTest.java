@@ -9,7 +9,7 @@
 package org.cryptomator.cryptofs;
 
 import static java.nio.file.Files.walkFileTree;
-import static org.cryptomator.cryptofs.CryptoFileSystemProperties.cryptoFileSystemProperties;
+import static org.cryptomator.cryptofs.common.CryptoFileSystemProperties.cryptoFileSystemProperties;
 import static org.cryptomator.cryptofs.CryptoFileSystemUri.create;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.UserPrincipal;
 
+import org.cryptomator.cryptofs.common.DeletingFileVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;

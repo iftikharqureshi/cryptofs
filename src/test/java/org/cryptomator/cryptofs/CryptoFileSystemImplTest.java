@@ -1,10 +1,24 @@
 package org.cryptomator.cryptofs;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
-import org.cryptomator.cryptofs.CryptoPathMapper.CiphertextFileType;
-import org.cryptomator.cryptofs.CryptoPathMapper.CiphertextDirectory;
-import org.cryptomator.cryptofs.OpenCryptoFiles.TwoPhaseMove;
+import org.cryptomator.cryptofs.paths.CiphertextDirectoryDeleter;
+import org.cryptomator.cryptofs.paths.CryptoPath;
+import org.cryptomator.cryptofs.paths.CryptoPathFactory;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper.CiphertextFileType;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper.CiphertextDirectory;
+import org.cryptomator.cryptofs.common.FinallyUtil;
+import org.cryptomator.cryptofs.file.OpenCryptoFiles;
+import org.cryptomator.cryptofs.file.OpenCryptoFiles.TwoPhaseMove;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeByNameProvider;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeProvider;
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeViewProvider;
+import org.cryptomator.cryptofs.common.ReadonlyFlag;
+import org.cryptomator.cryptofs.common.RunnableThrowingException;
 import org.cryptomator.cryptofs.mocks.FileChannelMock;
+import org.cryptomator.cryptofs.paths.DirectoryIdProvider;
+import org.cryptomator.cryptofs.paths.CryptoDirectoryStreamProvider;
+import org.cryptomator.cryptofs.paths.PathMatcherFactory;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.junit.Before;
 import org.junit.Rule;
@@ -91,7 +105,7 @@ public class CryptoFileSystemImplTest {
 	private final CryptoPathFactory cryptoPathFactory = mock(CryptoPathFactory.class);
 	private final CryptoFileSystemStats stats = mock(CryptoFileSystemStats.class);
 	private final RootDirectoryInitializer rootDirectoryInitializer = mock(RootDirectoryInitializer.class);
-	private final DirectoryStreamFactory directoryStreamFactory = mock(DirectoryStreamFactory.class);
+	private final CryptoDirectoryStreamProvider directoryStreamProvider = mock(CryptoDirectoryStreamProvider.class);
 	private final FinallyUtil finallyUtil = mock(FinallyUtil.class);
 	private final CiphertextDirectoryDeleter ciphertextDirDeleter = mock(CiphertextDirectoryDeleter.class);
 	private final ReadonlyFlag readonlyFlag = mock(ReadonlyFlag.class);
@@ -107,7 +121,7 @@ public class CryptoFileSystemImplTest {
 		when(cryptoPathFactory.emptyFor(any())).thenReturn(empty);
 
 		inTest = new CryptoFileSystemImpl(pathToVault, cryptor, provider, cryptoFileSystems, fileStore, openCryptoFiles, cryptoPathMapper, dirIdProvider, fileAttributeProvider, fileAttributeViewProvider,
-				pathMatcherFactory, cryptoPathFactory, stats, rootDirectoryInitializer, fileAttributeByNameProvider, directoryStreamFactory, finallyUtil, ciphertextDirDeleter, readonlyFlag);
+				pathMatcherFactory, cryptoPathFactory, stats, rootDirectoryInitializer, fileAttributeByNameProvider, directoryStreamProvider, finallyUtil, ciphertextDirDeleter, readonlyFlag);
 	}
 
 	@Test
@@ -202,7 +216,7 @@ public class CryptoFileSystemImplTest {
 		public void testCloseClosesDirectoryStreams() throws IOException {
 			inTest.close();
 
-			verify(directoryStreamFactory).close();
+			verify(directoryStreamProvider).close();
 		}
 
 		@Test
@@ -269,7 +283,7 @@ public class CryptoFileSystemImplTest {
 			inTest.close();
 			inTest.close();
 
-			verify(directoryStreamFactory).close();
+			verify(directoryStreamProvider).close();
 		}
 
 		@Test

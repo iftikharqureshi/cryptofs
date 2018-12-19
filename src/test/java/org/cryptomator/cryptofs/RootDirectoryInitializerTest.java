@@ -8,6 +8,10 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import org.cryptomator.cryptofs.common.ReadonlyFlag;
+import org.cryptomator.cryptofs.common.UncheckedThrows;
+import org.cryptomator.cryptofs.paths.CryptoPath;
+import org.cryptomator.cryptofs.paths.CryptoPathMapper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

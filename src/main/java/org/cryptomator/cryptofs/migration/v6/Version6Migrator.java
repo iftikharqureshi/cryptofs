@@ -15,7 +15,7 @@ import java.text.Normalizer.Form;
 
 import javax.inject.Inject;
 
-import org.cryptomator.cryptofs.Constants;
+import org.cryptomator.cryptofs.common.Constants;
 import org.cryptomator.cryptofs.migration.api.Migrator;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;

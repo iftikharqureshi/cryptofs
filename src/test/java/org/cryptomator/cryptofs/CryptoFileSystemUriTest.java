@@ -1,7 +1,7 @@
 package org.cryptomator.cryptofs;
 
 import static java.nio.file.Files.createTempDirectory;
-import static org.cryptomator.cryptofs.CryptoFileSystemProperties.cryptoFileSystemProperties;
+import static org.cryptomator.cryptofs.common.CryptoFileSystemProperties.cryptoFileSystemProperties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.cryptomator.cryptofs.common.DeletingFileVisitor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

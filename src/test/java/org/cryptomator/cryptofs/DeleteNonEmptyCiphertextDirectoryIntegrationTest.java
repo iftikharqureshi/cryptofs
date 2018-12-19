@@ -10,8 +10,8 @@ package org.cryptomator.cryptofs;
 
 import static java.nio.file.Files.walkFileTree;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static org.cryptomator.cryptofs.Constants.SHORT_NAMES_MAX_LENGTH;
-import static org.cryptomator.cryptofs.CryptoFileSystemProperties.cryptoFileSystemProperties;
+import static org.cryptomator.cryptofs.common.Constants.SHORT_NAMES_MAX_LENGTH;
+import static org.cryptomator.cryptofs.common.CryptoFileSystemProperties.cryptoFileSystemProperties;
 import static org.cryptomator.cryptofs.CryptoFileSystemUri.create;
 
 import java.io.File;
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.cryptomator.cryptofs.common.DeletingFileVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;

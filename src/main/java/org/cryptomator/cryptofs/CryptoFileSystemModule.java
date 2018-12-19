@@ -6,12 +6,16 @@
 package org.cryptomator.cryptofs;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.cryptomator.cryptofs.UncheckedThrows.rethrowUnchecked;
+import static org.cryptomator.cryptofs.common.UncheckedThrows.rethrowUnchecked;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.cryptomator.cryptofs.common.Constants;
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
+import org.cryptomator.cryptofs.common.PathToVault;
+import org.cryptomator.cryptofs.common.ReadonlyFlag;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.KeyFile;

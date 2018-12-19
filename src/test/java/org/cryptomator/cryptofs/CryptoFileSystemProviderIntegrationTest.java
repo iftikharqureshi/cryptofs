@@ -8,11 +8,20 @@
  *******************************************************************************/
 package org.cryptomator.cryptofs;
 
-import static java.nio.file.Files.readAllBytes;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import static org.cryptomator.cryptofs.CryptoFileSystemProperties.cryptoFileSystemProperties;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import com.google.common.io.MoreFiles;
+import com.google.common.io.RecursiveDeleteOption;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
+import org.cryptomator.cryptolib.api.InvalidPassphraseException;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,21 +38,11 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
 
-import org.cryptomator.cryptolib.api.InvalidPassphraseException;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.google.common.io.MoreFiles;
-import com.google.common.io.RecursiveDeleteOption;
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
+import static java.nio.file.Files.readAllBytes;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.cryptomator.cryptofs.common.CryptoFileSystemProperties.cryptoFileSystemProperties;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class CryptoFileSystemProviderIntegrationTest {
 
@@ -128,7 +127,7 @@ public class CryptoFileSystemProviderIntegrationTest {
 	public void testOpenAndCloseFileChannel() throws IOException {
 		FileSystem fs = CryptoFileSystemProvider.newFileSystem(pathToVault, cryptoFileSystemProperties().withPassphrase("asd").build());
 		try (FileChannel ch = FileChannel.open(fs.getPath("/foo"), EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW))) {
-			Assert.assertTrue(ch instanceof CryptoFileChannel);
+			Assert.assertTrue(ch.isOpen());
 		}
 	}
 

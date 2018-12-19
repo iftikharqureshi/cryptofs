@@ -45,7 +45,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+import org.cryptomator.cryptofs.common.Constants;
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
 import org.cryptomator.cryptofs.migration.Migrators;
+import org.cryptomator.cryptofs.paths.CryptoPath;
 import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;

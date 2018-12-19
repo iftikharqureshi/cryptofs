@@ -25,6 +25,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.spi.FileSystemProvider;
 
 import org.cryptomator.cryptofs.mocks.DirectoryStreamMock;
+import org.cryptomator.cryptofs.paths.CryptoPath;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

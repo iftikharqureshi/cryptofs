@@ -1,8 +1,10 @@
 package org.cryptomator.cryptofs;
 
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
+
 import static java.lang.String.format;
 import static org.cryptomator.cryptofs.CryptoFileSystemModule.cryptoFileSystemModule;
-import static org.cryptomator.cryptofs.UncheckedThrows.allowUncheckedThrowsOf;
+import static org.cryptomator.cryptofs.common.UncheckedThrows.allowUncheckedThrowsOf;
 
 import java.io.IOException;
 import java.nio.file.FileSystemAlreadyExistsException;

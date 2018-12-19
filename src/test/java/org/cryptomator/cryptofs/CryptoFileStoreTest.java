@@ -8,7 +8,7 @@
  *******************************************************************************/
 package org.cryptomator.cryptofs;
 
-import static org.cryptomator.cryptofs.UncheckedThrows.allowUncheckedThrowsOf;
+import static org.cryptomator.cryptofs.common.UncheckedThrows.allowUncheckedThrowsOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertFalse;
@@ -29,11 +29,12 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.Set;
 
+import org.cryptomator.cryptofs.attr.CryptoFileAttributeViewProvider;
+import org.cryptomator.cryptofs.common.ReadonlyFlag;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 

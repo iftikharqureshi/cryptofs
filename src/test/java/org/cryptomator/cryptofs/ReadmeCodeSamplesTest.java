@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.cryptomator.cryptofs.common.CryptoFileSystemProperties;
+import org.cryptomator.cryptofs.common.DeletingFileVisitor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
